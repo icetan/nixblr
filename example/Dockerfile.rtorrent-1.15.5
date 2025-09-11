@@ -1,0 +1,15 @@
+FROM docker.io/icetan/nixblr AS builder
+
+RUN --mount=type=cache,target=/nix,sharing=locked,id=nix_cache nix-build --expr '\
+with import (builtins.fetchTarball { \
+  url="https://github.com/nixos/nixpkgs/archive/648f70160c03151bc2121d179291337ad6bc564b.tar.gz"; \
+  sha256="sha256:11sqj4jqkscsgrkhz31a61hi26vs890x5vmdi8msg5dhpsmj5bql"; \
+}) {}; pkgsStatic.rtorrent' \
+&&  cp result/bin/rtorrent /out/rtorrent \
+&&  chmod +x /out/rtorrent
+
+
+FROM docker.io/alpine
+
+COPY --from=builder /out/rtorrent /usr/bin/rtorrent
+ENTRYPOINT ["rtorrent"]

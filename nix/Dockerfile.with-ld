@@ -1,0 +1,10 @@
+FROM nixblr:_temp
+
+ARG KERNEL
+ARG MACHINE
+
+# Copy libc from Debian
+COPY --from=debian /usr/lib/${MACHINE}-${KERNEL}-gnu /usr/lib/${MACHINE}-${KERNEL}-gnu
+
+RUN ln -sT /lib /lib64 \
+&&  ln -s /usr/lib/${MACHINE}-${KERNEL}-gnu/ld-*.so.* /lib
